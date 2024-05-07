@@ -1,4 +1,3 @@
-
 import json
 import logging
 from hashlib import md5
@@ -7,7 +6,7 @@ from botocore.exceptions import ClientError
 
 from alfred.cache.walrus_cache import Cache
 from alfred.sentry import sentry_sdk
-from alfred.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, SQS_QUEUE_URL
+from alfred.settings import SQS_QUEUE_URL, SQS_TASK_EAGER
 from alfred.sqs.models import DeadTask
 
 from . import sqs_client
@@ -36,7 +35,6 @@ class SQSTask:
         once_time=None,
         fail_silently=False,
         message_group_id=None,
-        sqs_task_eager=False,
     ):
         self.dead_retry = dead_retry
         self.retries = retries
@@ -45,14 +43,13 @@ class SQSTask:
         self.once_time = once_time
         self.fail_silently = fail_silently
         self.message_group_id = message_group_id
-        self.sqs_task_eager = sqs_task_eager
 
     def __call__(self, func):
         self.func = func
         return self
 
     def apply_async(self, args=[], kwargs={}, queue_url=None, countdown=default_delay):
-        if self.sqs_task_eager:
+        if SQS_TASK_EAGER:
             return self.apply(args, kwargs)
 
         body = {
@@ -80,7 +77,7 @@ class SQSTask:
             data_exception = {
                 "err": str(err),
                 "queue_url": queue_url,
-                "response": err.response
+                "response": err.response,
             }
             sentry_sdk.capture_message(str(data_exception))
 
