@@ -50,7 +50,7 @@ class SQSTask:
 
     def apply_async(self, args=[], kwargs={}, queue_url=None, countdown=default_delay):
         if SQS_TASK_EAGER:
-            return self.apply(args, kwargs)
+            return self.apply(*args, **kwargs)
 
         body = {
             "_func_module": self.func.__module__,
