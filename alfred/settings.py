@@ -18,4 +18,9 @@ SQS_QUEUE_URL = os.environ.get("SQS_QUEUE_URL", "")
 DYNAMODB_HOST = os.environ.get("DYNAMODB_HOST")
 DYNAMODB_PREFIX = os.environ.get("DYNAMODB_PREFIX")
 
-SQS_TASK_EAGER = os.environ.get("SQS_TASK_EAGER", False)
+
+def str_to_bool(value):
+    return value.lower() in ("true", "1", "t", "yes", "y")
+
+
+SQS_TASK_EAGER = str_to_bool(os.environ.get("SQS_TASK_EAGER", "false"))
