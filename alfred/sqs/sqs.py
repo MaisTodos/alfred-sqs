@@ -60,8 +60,10 @@ class SQSTask:
             "retries": self.retries,
         }
 
+        queue_url = queue_url or self.queue_url
+
         message_params = {
-            "QueueUrl": queue_url or self.queue_url,
+            "QueueUrl": queue_url,
             "MessageBody": json.dumps(body),
         }
 
